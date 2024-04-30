@@ -21,6 +21,32 @@ export const appFieldsState = selector<kintoneAPI.FieldProperty[]>({
   },
 });
 
+export const targetFieldsState = selector<kintoneAPI.FieldProperty[]>({
+  key: `${PREFIX}targetFieldsState`,
+  get: async ({ get }) => {
+    const fields = get(appFieldsState);
+    return fields.filter(
+      (field) =>
+        field.type === 'SINGLE_LINE_TEXT' ||
+        field.type === 'MULTI_LINE_TEXT' ||
+        field.type === 'RICH_TEXT' ||
+        field.type === 'DATE' ||
+        field.type === 'DATETIME'
+    );
+  },
+});
+
+export const basisFieldsState = selector<kintoneAPI.FieldProperty[]>({
+  key: `${PREFIX}basisFieldsState`,
+  get: async ({ get }) => {
+    const fields = get(appFieldsState);
+    return fields.filter(
+      (field) =>
+        field.type === 'SINGLE_LINE_TEXT' || field.type === 'NUMBER' || field.type === 'CALC'
+    );
+  },
+});
+
 export const flatFieldsState = selector<kintoneAPI.FieldProperty[]>({
   key: `${PREFIX}flatFieldsState`,
   get: async ({ get }) => {

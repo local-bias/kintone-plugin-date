@@ -5,15 +5,25 @@ declare namespace Plugin {
   /** 🔌 プラグインの詳細設定 */
   type Condition = Config['conditions'][number];
 
+  type Adjustment = Condition['adjustments'][number];
+
   /** 🔌 過去全てのバージョンを含むプラグインの設定情報 */
   type AnyConfig = ConfigV1; // | ConfigV2 | ...;
 
   type ConfigV1 = {
     version: 1;
     conditions: {
-      memo: string;
-      fields: string[];
-      isSampleUIShown: boolean;
+      targetFieldCode: string;
+      isTargetFieldDisabled: boolean;
+      basisType: 'currentDate' | 'field';
+      basisFieldCode: string;
+      adjustments: {
+        target: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second';
+        type: 'add' | 'subtract' | 'start' | 'end';
+        basisType: 'static' | 'field';
+        basisFieldCode: string;
+        staticValue: number;
+      }[];
     }[];
   };
 }

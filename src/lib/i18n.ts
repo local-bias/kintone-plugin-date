@@ -4,19 +4,21 @@ import { enUS, esES, jaJP, zhCN } from '@mui/material/locale';
 
 export const ui = {
   ja: {
-    'config.condition.memo.title': 'メモ',
-    'config.condition.memo.description':
-      'この設定はサンプルです。プラグインにテキスト情報を保存することができます。',
-    'config.condition.memo.label': '📝 メモ',
-    'config.condition.memo.placeholder': 'テキストを入力',
-    'config.condition.field.title': '対象フィールド',
-    'config.condition.field.description':
-      'この設定はサンプルです。このアプリの設定情報から、フィールド一覧を取得して表示しています。',
-    'config.condition.isSampleUIShown.title': 'スイッチのサンプル',
-    'config.condition.isSampleUIShown.description':
-      '有効・無効などを切り替えるスイッチのサンプルです。ここでは、レコード一覧にサンプルのUIを表示するかどうかを切り替えています。',
-    'config.condition.isSampleUIShown.label': 'サンプルUIを表示',
-
+    'config.condition.targetFieldCode.title': '対象フィールド',
+    'config.condition.targetFieldCode.description':
+      'プラグインによって制御する対象となるフィールドを指定してください。',
+    'config.condition.targetFieldCode.label': '対象フィールド',
+    'config.condition.targetFieldCode.placeholder': 'フィールド名(フィールドコード)',
+    'config.condition.isTargetFieldDisabled.label': 'フィールドを直接編集することを禁止する',
+    'config.condition.basisType.title': '基準となる日付',
+    'config.condition.basisType.description':
+      '基準となる日付を指定してください。現在の日付を基準にするか、フィールドの値を基準にするかを選択します。',
+    'config.condition.basisFieldCode.title': '基準フィールド',
+    'config.condition.basisFieldCode.description':
+      '基準とするフィールドを指定してください。基準日がフィールドの値になります。文字列一行フィールドを設定することもできますが、日付のフォーマットとして適切でない場合はエラーとなります。',
+    'config.condition.basisFieldCode.label': '基準フィールド',
+    'config.condition.adjustments.title': '日付の制御',
+    'config.condition.adjustments.description': '基準日から加算・減算を行う方法を設定します',
     'config.sidebar.tab.label': '設定',
     'config.button.save': '設定を保存',
     'config.button.return': 'プラグイン一覧へ戻る',
@@ -35,18 +37,22 @@ export const ui = {
     'desktop.dialog.title': 'プラグインの設定情報',
   },
   en: {
-    'config.condition.memo.title': 'Memo',
-    'config.condition.memo.description':
-      'This is a sample setting. You can save text information in the plugin.',
-    'config.condition.memo.label': '📝 Memo',
-    'config.condition.memo.placeholder': 'Enter text',
-    'config.condition.field.title': 'Target Field',
-    'config.condition.field.description':
-      'This is a sample setting. It retrieves and displays a list of fields from the app settings.',
-    'config.condition.isSampleUIShown.title': 'Switch Sample',
-    'config.condition.isSampleUIShown.description':
-      'This is a sample switch that toggles between enabled and disabled. Here, it toggles whether to display a sample UI in the record list.',
-    'config.condition.isSampleUIShown.label': 'Show Sample UI',
+    'config.condition.targetFieldCode.title': 'Target Field',
+    'config.condition.targetFieldCode.description':
+      'Specify the field to be controlled by the plugin.',
+    'config.condition.targetFieldCode.label': 'Target Field',
+    'config.condition.targetFieldCode.placeholder': 'Field Name (Field Code)',
+    'config.condition.isTargetFieldDisabled.label': 'Disable direct field editing',
+    'config.condition.basisType.title': 'Basis Date',
+    'config.condition.basisType.description':
+      'Specify the basis date. Choose whether to use the current date as the basis or the value of a field.',
+    'config.condition.basisFieldCode.title': 'Basis Field',
+    'config.condition.basisFieldCode.description':
+      'Specify the field to be used as the basis. The field value will be the basis date. You can also set a single-line text field, but if it is not a valid date format, an error will occur.',
+    'config.condition.basisFieldCode.label': 'Basis Field',
+    'config.condition.adjustments.title': 'Date Adjustments',
+    'config.condition.adjustments.description': 'Set how to add or subtract from the basis date',
+    'config.sidebar.tab.label': 'Settings',
     'config.button.save': 'Save Settings',
     'config.button.return': 'Return to Plugin List',
     'config.toast.save': 'Settings saved',
@@ -63,18 +69,23 @@ export const ui = {
     'desktop.dialog.title': 'Plugin Settings',
   },
   es: {
-    'config.condition.memo.title': 'Memo',
-    'config.condition.memo.description':
-      'Esta es una configuración de ejemplo. Puede guardar información de texto en el complemento.',
-    'config.condition.memo.label': '📝 Memo',
-    'config.condition.memo.placeholder': 'Ingrese texto',
-    'config.condition.field.title': 'Campo objetivo',
-    'config.condition.field.description':
-      'Esta es una configuración de ejemplo. Recupera y muestra una lista de campos de la configuración de la aplicación.',
-    'config.condition.isSampleUIShown.title': 'Interruptor de muestra',
-    'config.condition.isSampleUIShown.description':
-      'Este es un interruptor de muestra que alterna entre habilitado y deshabilitado. Aquí, alterna si se muestra una interfaz de usuario de muestra en la lista de registros.',
-    'config.condition.isSampleUIShown.label': 'Mostrar interfaz de usuario de muestra',
+    'config.condition.targetFieldCode.title': 'Campo de destino',
+    'config.condition.targetFieldCode.description':
+      'Especifica el campo que será controlado por el complemento.',
+    'config.condition.targetFieldCode.label': 'Campo de destino',
+    'config.condition.targetFieldCode.placeholder': 'Nombre del campo (Código de campo)',
+    'config.condition.isTargetFieldDisabled.label': 'Deshabilitar edición directa del campo',
+    'config.condition.basisType.title': 'Fecha base',
+    'config.condition.basisType.description':
+      'Especifica la fecha base. Elija si desea utilizar la fecha actual como base o el valor de un campo.',
+    'config.condition.basisFieldCode.title': 'Campo base',
+    'config.condition.basisFieldCode.description':
+      'Especifica el campo que se utilizará como base. El valor del campo será la fecha base. También puede configurar un campo de texto de una sola línea, pero si no es un formato de fecha válido, se producirá un error.',
+    'config.condition.basisFieldCode.label': 'Campo base',
+    'config.condition.adjustments.title': 'Ajustes de fecha',
+    'config.condition.adjustments.description':
+      'Establece cómo sumar o restar a partir de la fecha base',
+    'config.sidebar.tab.label': 'Configuración',
     'config.button.save': 'Guardar configuración',
     'config.button.return': 'Volver a la lista de complementos',
     'config.toast.save': 'Configuración guardada',
@@ -92,24 +103,28 @@ export const ui = {
     'desktop.dialog.title': 'Configuración del complemento',
   },
   zh: {
-    'config.condition.memo.title': '备忘录',
-    'config.condition.memo.description': '这是一个示例设置。您可以在插件中保存文本信息。',
-    'config.condition.memo.label': '📝 备忘录',
-    'config.condition.memo.placeholder': '输入文本',
-    'config.condition.field.title': '目标字段',
-    'config.condition.field.description':
-      '这是一个示例设置。它从应用程序设置中检索并显示字段列表。',
-    'config.condition.isSampleUIShown.title': '开关示例',
-    'config.condition.isSampleUIShown.description':
-      '这是一个示例开关，可在启用和禁用之间切换。在这里，它切换是否在记录列表中显示示例UI。',
-    'config.condition.isSampleUIShown.label': '显示示例UI',
+    'config.condition.targetFieldCode.title': '目标字段',
+    'config.condition.targetFieldCode.description': '指定插件要控制的字段。',
+    'config.condition.targetFieldCode.label': '目标字段',
+    'config.condition.targetFieldCode.placeholder': '字段名称（字段代码）',
+    'config.condition.isTargetFieldDisabled.label': '禁用直接字段编辑',
+    'config.condition.basisType.title': '基准日期',
+    'config.condition.basisType.description':
+      '指定基准日期。选择使用当前日期作为基准还是字段的值作为基准。',
+    'config.condition.basisFieldCode.title': '基准字段',
+    'config.condition.basisFieldCode.description':
+      '指定要用作基准的字段。字段值将成为基准日期。您也可以设置单行文本字段，但如果不是有效的日期格式，将会出现错误。',
+    'config.condition.basisFieldCode.label': '基准字段',
+    'config.condition.adjustments.title': '日期调整',
+    'config.condition.adjustments.description': '设置如何从基准日期进行加减',
+    'config.sidebar.tab.label': '设置',
     'config.button.save': '保存设置',
     'config.button.return': '返回插件列表',
     'config.toast.save': '设置已保存',
     'config.toast.reset': '设置已重置',
     'config.toast.import': '已导入设置',
     'config.toast.export': '已导出插件设置',
-    'config.error.root': '插件HTML中不存在根元素。要渲染插件设置，需要一个id="settings"的元素。',
+    'config.error.root': '插件的HTML中不存在根元素。要渲染插件设置，需要一个id="settings"的元素。',
     'config.error.import': '导入设置失败。请检查文件是否有错误。',
     'config.error.export': '导出插件设置失败。请联系插件开发者。',
     'desktop.dialogtrigger.title': '插件已启用',

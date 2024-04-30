@@ -1,65 +1,94 @@
-import { restorePluginConfig } from '@/lib/plugin';
 import { manager } from '@/lib/event-manager';
-import { Root, createRoot } from 'react-dom/client';
-import React from 'react';
-import { Rocket } from 'lucide-react';
-import { Alert, AlertTitle } from '@mui/material';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { PLUGIN_NAME } from '@/lib/static';
-import { t } from '@/lib/i18n';
-import config from 'plugin.config.mjs';
-import { ThemeProvider } from '@/lib/components/theme-provider';
+import { restorePluginConfig } from '@/lib/plugin';
+import { kintoneAPI } from '@konomi-app/kintone-utilities';
+import { DateTime } from 'luxon';
 
-const ROOT_ID = `🐸${config.id}-root`;
+const storage = restorePluginConfig();
 
-let cachedRoot: Root | null = null;
-
-manager.add(['app.record.index.show'], async (event) => {
-  const config = restorePluginConfig();
-
-  if (!cachedRoot || !document.getElementById(ROOT_ID)) {
-    const rootElement = document.createElement('div');
-    rootElement.id = ROOT_ID;
-    document.body.append(rootElement);
-
-    const root = createRoot(rootElement);
-
-    cachedRoot = root;
+for (const condition of storage.conditions) {
+  const events: kintoneAPI.js.EventType[] = [
+    'app.record.create.show',
+    'app.record.edit.show',
+    'app.record.index.edit.show',
+    'app.record.create.submit',
+    'app.record.edit.submit',
+    'app.record.index.edit.submit',
+  ];
+  if (condition.basisType === 'field' && condition.basisFieldCode) {
+    // @ts-expect-error
+    events.push(`app.record.create.change.${condition.basisFieldCode}`);
+    // @ts-expect-error
+    events.push(`app.record.edit.change.${condition.basisFieldCode}`);
+    // @ts-expect-error
+    events.push(`app.record.index.edit.change.${condition.basisFieldCode}`);
   }
+  condition.adjustments.forEach((adjustment) => {
+    if (adjustment.basisType === 'field' && adjustment.basisFieldCode) {
+      // @ts-expect-error
+      events.push(`app.record.create.change.${adjustment.basisFieldCode}`);
+      // @ts-expect-error
+      events.push(`app.record.edit.change.${adjustment.basisFieldCode}`);
+      // @ts-expect-error
+      events.push(`app.record.index.edit.change.${adjustment.basisFieldCode}`);
+    }
+  });
 
-  cachedRoot.render(
-    <ThemeProvider>
-      <Dialog>
-        <DialogTrigger className='🐸'>
-          <div className='fixed right-4 bottom-4'>
-            <Alert icon={<Rocket className='h-4 w-4' />} severity='success'>
-              <AlertTitle sx={{ fontWeight: 600 }}>{t('desktop.dialogtrigger.title')}</AlertTitle>
-              {t('desktop.dialogtrigger.content')}
-            </Alert>
-          </div>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{PLUGIN_NAME}</DialogTitle>
-          </DialogHeader>
-          <div>
-            <h3>{t('desktop.dialog.title')}</h3>
-            <div className='max-h-[40vh] overflow-y-auto'>
-              <pre className='font-mono p-4 bg-foreground text-background m-0'>
-                {JSON.stringify(config, null, 2)}
-              </pre>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </ThemeProvider>
-  );
+  process.env.NODE_ENV === 'development' && console.log('events', events);
 
-  return event;
-});
+  manager.addChangeEvents(events, (event) => {
+    const { record } = event;
+    const targetField = record[condition.targetFieldCode];
+    const basisField = record[condition.basisFieldCode];
+
+    if (targetField.type !== 'DATE' && targetField.type !== 'DATETIME') {
+      console.warn(
+        `${condition.targetFieldCode}が日付フィールドではないため、処理をスキップします`
+      );
+      return event;
+    }
+    if (condition.basisType === 'field' && typeof basisField?.value !== 'string') {
+      console.warn(`${condition.basisFieldCode}の値が不正です。処理をスキップします`);
+      return event;
+    }
+
+    if (condition.isTargetFieldDisabled) {
+      // @ts-expect-error
+      targetField.disabled = true;
+    }
+
+    let adjusted =
+      condition.basisType === 'currentDate'
+        ? DateTime.local()
+        : DateTime.fromISO(basisField.value as string);
+
+    for (const adjustment of condition.adjustments) {
+      const { target, type, basisType, basisFieldCode, staticValue } = adjustment;
+      const basisValue = basisType === 'static' ? staticValue : record[basisFieldCode].value;
+
+      switch (type) {
+        case 'start':
+          adjusted = adjusted.startOf(target);
+          break;
+        case 'end':
+          adjusted = adjusted.endOf(target);
+          break;
+        case 'add':
+          adjusted = adjusted.plus({ [target]: basisValue });
+          break;
+        case 'subtract':
+          adjusted = adjusted.minus({ [target]: basisValue });
+          break;
+      }
+    }
+
+    if (targetField.type === 'DATE') {
+      process.env.NODE_ENV === 'development' &&
+        console.log('adjusted', adjusted.toFormat('yyyy-MM-dd'));
+      targetField.value = adjusted.toFormat('yyyy-MM-dd');
+    } else {
+      process.env.NODE_ENV === 'development' && console.log('adjusted', adjusted.toISO());
+      targetField.value = adjusted.toISO() ?? '';
+    }
+    return event;
+  });
+}

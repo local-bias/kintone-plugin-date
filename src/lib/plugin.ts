@@ -1,11 +1,54 @@
 import { restoreStorage } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
 import { PLUGIN_ID } from './global';
+import { DateTimeUnit } from 'luxon';
+
+export const BASIS_TYPES = [
+  { label: '入力時の日付', value: 'currentDate' },
+  { label: 'フィールドの値', value: 'field' },
+] as const satisfies {
+  label: string;
+  value: Plugin.Condition['basisType'];
+}[];
+
+export const ADJUSTMENT_TARGETS = [
+  { label: '年', value: 'year' },
+  { label: '月', value: 'month' },
+  { label: '日', value: 'day' },
+  { label: '時', value: 'hour' },
+  { label: '分', value: 'minute' },
+  { label: '秒', value: 'second' },
+] as const satisfies { label: string; value: Plugin.Adjustment['target'] }[] satisfies {
+  label: string;
+  value: DateTimeUnit;
+}[];
+
+export const ADJUSTMENT_TYPES = [
+  { label: '加算', value: 'add' },
+  { label: '減算', value: 'subtract' },
+  { label: '最初の値', value: 'start' },
+  { label: '最後の値', value: 'end' },
+] as const satisfies { label: string; value: Plugin.Adjustment['type'] }[];
+
+export const ADJUSTMENT_BASIS_TYPES = [
+  { label: '固定値', value: 'static' },
+  { label: 'フィールドの値', value: 'field' },
+] as const satisfies { label: string; value: Plugin.Adjustment['basisType'] }[];
 
 export const getNewCondition = (): Plugin.Condition => ({
-  memo: '',
-  fields: [''],
-  isSampleUIShown: true,
+  targetFieldCode: '',
+  isTargetFieldDisabled: false,
+  basisType: 'currentDate',
+  basisFieldCode: '',
+  adjustments: [
+    {
+      target: 'year',
+      type: 'add',
+      basisType: 'static',
+      basisFieldCode: '',
+      staticValue: 0,
+    },
+  ],
 });
 
 /**

@@ -25,6 +25,13 @@ export const conditionsState = selector<Plugin.Condition[]>({
     return storage?.conditions ?? [];
   },
 });
+export const conditionsLengthState = selector<number>({
+  key: `${PREFIX}conditionsLengthState`,
+  get: ({ get }) => {
+    const conditions = get(conditionsState);
+    return conditions.length;
+  },
+});
 
 const conditionPropertyState = selectorFamily<
   Plugin.Condition[keyof Plugin.Condition],
@@ -54,5 +61,3 @@ const conditionPropertyState = selectorFamily<
 
 export const getConditionPropertyState = <T extends keyof Plugin.Condition>(property: T) =>
   conditionPropertyState(property) as unknown as RecoilState<Plugin.Condition[T]>;
-
-export const fieldsState = getConditionPropertyState('fields');

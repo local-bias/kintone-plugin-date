@@ -4,39 +4,102 @@ import {
   PluginFormSection,
   PluginFormTitle,
   PluginFormDescription,
-  RecoilText,
+  RecoilFieldSelect,
+  RecoilRadio,
   RecoilSwitch,
 } from '@konomi-app/kintone-utilities-react';
-import FieldsForm from './form-fields';
+import AdjustmentsForm from './form-adjustments';
 import DeleteButton from './condition-delete-button';
 import { getConditionPropertyState } from '@/config/states/plugin';
 import { t } from '@/lib/i18n';
+import { targetFieldsState } from '@/config/states/kintone';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
+import { BASIS_TYPES } from '@/lib/plugin';
+
+const TargetFieldCodeForm: FC = () => {
+  const fieldCode = useRecoilValue(getConditionPropertyState('targetFieldCode'));
+
+  const onChange = useRecoilCallback(
+    ({ set }) =>
+      (value: string) => {
+        set(getConditionPropertyState('targetFieldCode'), value);
+      },
+    []
+  );
+
+  return (
+    <RecoilFieldSelect
+      state={targetFieldsState}
+      fieldCode={fieldCode}
+      onChange={onChange}
+      label={t('config.condition.targetFieldCode.label')}
+      placeholder={t('config.condition.targetFieldCode.placeholder')}
+    />
+  );
+};
+
+const BasisFieldCodeForm: FC = () => {
+  const basisType = useRecoilValue(getConditionPropertyState('basisType'));
+  const fieldCode = useRecoilValue(getConditionPropertyState('basisFieldCode'));
+
+  const onChange = useRecoilCallback(
+    ({ set }) =>
+      (value: string) => {
+        set(getConditionPropertyState('basisFieldCode'), value);
+      },
+    []
+  );
+
+  if (basisType !== 'field') {
+    return null;
+  }
+
+  return (
+    <PluginFormSection>
+      <PluginFormTitle>{t('config.condition.basisFieldCode.title')}</PluginFormTitle>
+      <PluginFormDescription last>
+        {t('config.condition.basisFieldCode.description')}
+      </PluginFormDescription>
+      <RecoilFieldSelect
+        state={targetFieldsState}
+        fieldCode={fieldCode}
+        onChange={onChange}
+        label={t('config.condition.basisFieldCode.label')}
+      />
+    </PluginFormSection>
+  );
+};
 
 const Component: FC = () => (
   <div className='p-4'>
     <PluginFormSection>
-      <PluginFormTitle>{t('config.condition.memo.title')}</PluginFormTitle>
-      <PluginFormDescription last>{t('config.condition.memo.description')}</PluginFormDescription>
-      <RecoilText
-        state={getConditionPropertyState('memo')}
-        label={t('config.condition.memo.label')}
-        placeholder={t('config.condition.memo.placeholder')}
-      />
-    </PluginFormSection>
-    <PluginFormSection>
-      <PluginFormTitle>{t('config.condition.field.title')}</PluginFormTitle>
-      <PluginFormDescription last>{t('config.condition.field.description')}</PluginFormDescription>
-      <FieldsForm />
-    </PluginFormSection>
-    <PluginFormSection>
-      <PluginFormTitle>{t('config.condition.isSampleUIShown.title')}</PluginFormTitle>
+      <PluginFormTitle>{t('config.condition.targetFieldCode.title')}</PluginFormTitle>
       <PluginFormDescription last>
-        {t('config.condition.isSampleUIShown.description')}
+        {t('config.condition.targetFieldCode.description')}
       </PluginFormDescription>
-      <RecoilSwitch
-        state={getConditionPropertyState('isSampleUIShown')}
-        label={t('config.condition.isSampleUIShown.label')}
-      />
+      <div className='flex flex-col gap-4'>
+        <TargetFieldCodeForm />
+        <RecoilSwitch
+          state={getConditionPropertyState('isTargetFieldDisabled')}
+          label={t('config.condition.isTargetFieldDisabled.label')}
+        />
+      </div>
+    </PluginFormSection>
+    <PluginFormSection>
+      <PluginFormTitle>{t('config.condition.basisType.title')}</PluginFormTitle>
+      <PluginFormDescription last>
+        {t('config.condition.basisType.description')}
+      </PluginFormDescription>
+      {/* @ts-expect-error */}
+      <RecoilRadio options={BASIS_TYPES} state={getConditionPropertyState('basisType')} />
+    </PluginFormSection>
+    <BasisFieldCodeForm />
+    <PluginFormSection>
+      <PluginFormTitle>{t('config.condition.adjustments.title')}</PluginFormTitle>
+      <PluginFormDescription last>
+        {t('config.condition.adjustments.description')}
+      </PluginFormDescription>
+      <AdjustmentsForm />
     </PluginFormSection>
     <DeleteButton />
   </div>

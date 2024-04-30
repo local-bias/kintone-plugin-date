@@ -1,8 +1,8 @@
 // @ts-check
 const hp = 'https://konomi.app';
 const cdn = 'https://kintone-plugin.konomi.app';
-const key = 'template';
-const localhost = 'https://127.0.0.1:65535';
+const key = 'date';
+const localhost = 'https://127.0.0.1:9365';
 
 /** @satisfies { import('@konomi-app/kintone-utilities').PluginConfig } */
 export default /** @type { const } */ ({
@@ -14,14 +14,14 @@ export default /** @type { const } */ ({
       version: '1.0.0',
       type: 'APP',
       name: {
-        en: 'kintone-plugin-template',
-        ja: 'プラグインテンプレート',
-        zh: '插件模板',
+        en: 'Date Control Plugin',
+        ja: '日付制御プラグイン',
+        zh: '日期控制插件',
       },
       description: {
-        en: 'kintone-plugin-template',
-        ja: 'プラグインの説明をここに記載します',
-        zh: '插件模板',
+        en: 'Perform addition or subtraction from the current date or a specific date field and set the result to another field.',
+        ja: '現在の日付、もしくは特定の日付フィールドから、加算・減算を行い、結果を別のフィールドに設定します。',
+        zh: '从当前日期或特定日期字段执行加法或减法，并将结果设置到另一个字段。',
       },
       icon: 'icon.png',
       homepage_url: { ja: hp, en: hp },
