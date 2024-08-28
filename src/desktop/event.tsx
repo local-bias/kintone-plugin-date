@@ -1,7 +1,8 @@
 import { manager } from '@/lib/event-manager';
 import { restorePluginConfig } from '@/lib/plugin';
-import { getFieldValueAsString, kintoneAPI } from '@konomi-app/kintone-utilities';
+import { kintoneAPI } from '@konomi-app/kintone-utilities';
 import { DateTime } from 'luxon';
+import { getAdjustedDate, validateRecord } from './common-actions';
 
 const storage = restorePluginConfig();
 
@@ -40,23 +41,10 @@ for (const condition of storage.conditions) {
     const targetField = record[condition.targetFieldCode];
     const basisField = record[condition.basisFieldCode];
 
-    if (!targetField) {
-      console.warn(`${condition.targetFieldCode}が存在しません。処理をスキップします`);
-      return event;
-    }
-    if (condition.basisType === 'field' && !basisField) {
-      console.warn(`${condition.basisFieldCode}が存在しません。処理をスキップします`);
-      return event;
-    }
+    const validationResult = validateRecord({ record, condition });
 
-    if (targetField.type !== 'DATE' && targetField.type !== 'DATETIME') {
-      console.warn(
-        `${condition.targetFieldCode}が日付フィールドではないため、処理をスキップします`
-      );
-      return event;
-    }
-    if (condition.basisType === 'field' && typeof basisField?.value !== 'string') {
-      console.warn(`${condition.basisFieldCode}の値が不正です。処理をスキップします`);
+    if (!validationResult.valid) {
+      console.warn(validationResult.errorMessage);
       return event;
     }
 
@@ -65,37 +53,12 @@ for (const condition of storage.conditions) {
       targetField.disabled = true;
     }
 
-    let adjusted =
+    const basisDate =
       condition.basisType === 'currentDate'
         ? DateTime.local()
         : DateTime.fromISO(basisField!.value as string);
 
-    for (const adjustment of condition.adjustments) {
-      const { target, type, basisType, basisFieldCode, staticValue } = adjustment;
-      const basisField = record[basisFieldCode];
-
-      if (basisType === 'field' && (!basisField || typeof basisField.value !== 'string')) {
-        console.warn(`${basisFieldCode}の値が不正です。処理をスキップします`);
-        return event;
-      }
-
-      const basisValue = basisType === 'static' ? staticValue : getFieldValueAsString(basisField);
-
-      switch (type) {
-        case 'start':
-          adjusted = adjusted.startOf(target);
-          break;
-        case 'end':
-          adjusted = adjusted.endOf(target);
-          break;
-        case 'add':
-          adjusted = adjusted.plus({ [target]: basisValue });
-          break;
-        case 'subtract':
-          adjusted = adjusted.minus({ [target]: basisValue });
-          break;
-      }
-    }
+    const adjusted = getAdjustedDate({ basisDate, record, condition });
 
     if (targetField.type === 'DATE') {
       process.env.NODE_ENV === 'development' &&

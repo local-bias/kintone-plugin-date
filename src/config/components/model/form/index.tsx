@@ -101,6 +101,18 @@ const Component: FC = () => (
       </PluginFormDescription>
       <AdjustmentsForm />
     </PluginFormSection>
+    <PluginFormSection>
+      <PluginFormTitle>{t('config.condition.bulkUpdate.title')}</PluginFormTitle>
+      <PluginFormDescription last>
+        {t('config.condition.bulkUpdate.description')}
+      </PluginFormDescription>
+      <div className='flex flex-col gap-4'>
+        <RecoilSwitch
+          state={getConditionPropertyState('isBulkUpdateButtonVisible')}
+          label={t('config.condition.isBulkUpdateButtonVisible.label')}
+        />
+      </div>
+    </PluginFormSection>
     <DeleteButton />
   </div>
 );

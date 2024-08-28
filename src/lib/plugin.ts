@@ -40,6 +40,14 @@ export const getNewCondition = (): Plugin.Condition => ({
   isTargetFieldDisabled: false,
   basisType: 'currentDate',
   basisFieldCode: '',
+  isBulkUpdateButtonVisible: false,
+  isBulkUpdateButtonVisibleForSpecificEntities: false,
+  visibleFor: [
+    {
+      type: 'user',
+      code: '',
+    },
+  ],
   adjustments: [
     {
       target: 'year',
@@ -55,7 +63,7 @@ export const getNewCondition = (): Plugin.Condition => ({
  * プラグインの設定情報のひな形を返却します
  */
 export const createConfig = (): Plugin.Config => ({
-  version: 1,
+  version: 2,
   conditions: [getNewCondition()],
 });
 
@@ -73,6 +81,21 @@ export const migrateConfig = (anyConfig: Plugin.AnyConfig): Plugin.Config => {
       //@ts-expect-error
       return migrateConfig({ version: 1, ...anyConfig });
     case 1:
+      return migrateConfig({
+        version: 2,
+        conditions: anyConfig.conditions.map((condition) => ({
+          ...condition,
+          isBulkUpdateButtonVisible: false,
+          isBulkUpdateButtonVisibleForSpecificEntities: false,
+          visibleFor: [
+            {
+              type: 'user',
+              code: '',
+            },
+          ],
+        })),
+      });
+    case 2:
     default:
       // もし新しいバージョンを追加したらここに追加する
       // return migrateConfig({ version: 2, ...anyConfig });
