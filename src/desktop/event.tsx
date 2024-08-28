@@ -1,6 +1,6 @@
 import { manager } from '@/lib/event-manager';
 import { restorePluginConfig } from '@/lib/plugin';
-import { kintoneAPI } from '@konomi-app/kintone-utilities';
+import { getFieldValueAsString, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { DateTime } from 'luxon';
 
 const storage = restorePluginConfig();
@@ -40,6 +40,15 @@ for (const condition of storage.conditions) {
     const targetField = record[condition.targetFieldCode];
     const basisField = record[condition.basisFieldCode];
 
+    if (!targetField) {
+      console.warn(`${condition.targetFieldCode}が存在しません。処理をスキップします`);
+      return event;
+    }
+    if (condition.basisType === 'field' && !basisField) {
+      console.warn(`${condition.basisFieldCode}が存在しません。処理をスキップします`);
+      return event;
+    }
+
     if (targetField.type !== 'DATE' && targetField.type !== 'DATETIME') {
       console.warn(
         `${condition.targetFieldCode}が日付フィールドではないため、処理をスキップします`
@@ -59,11 +68,18 @@ for (const condition of storage.conditions) {
     let adjusted =
       condition.basisType === 'currentDate'
         ? DateTime.local()
-        : DateTime.fromISO(basisField.value as string);
+        : DateTime.fromISO(basisField!.value as string);
 
     for (const adjustment of condition.adjustments) {
       const { target, type, basisType, basisFieldCode, staticValue } = adjustment;
-      const basisValue = basisType === 'static' ? staticValue : record[basisFieldCode].value;
+      const basisField = record[basisFieldCode];
+
+      if (basisType === 'field' && (!basisField || typeof basisField.value !== 'string')) {
+        console.warn(`${basisFieldCode}の値が不正です。処理をスキップします`);
+        return event;
+      }
+
+      const basisValue = basisType === 'static' ? staticValue : getFieldValueAsString(basisField);
 
       switch (type) {
         case 'start':
