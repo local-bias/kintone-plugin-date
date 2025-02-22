@@ -1,9 +1,10 @@
-import { RecoilState, atom, selector, selectorFamily } from 'recoil';
 import { getUpdatedStorage, restorePluginConfig } from '@/lib/plugin';
+import { PluginCondition, PluginConfig } from '@/schema/plugin-config';
+import { RecoilState, atom, selector, selectorFamily } from 'recoil';
 
 const PREFIX = 'plugin';
 
-export const storageState = atom<Plugin.Config>({
+export const storageState = atom<PluginConfig>({
   key: `${PREFIX}storageState`,
   default: restorePluginConfig(),
 });
@@ -18,7 +19,7 @@ export const tabIndexState = atom<number>({
   default: 0,
 });
 
-export const conditionsState = selector<Plugin.Condition[]>({
+export const conditionsState = selector<PluginCondition[]>({
   key: `${PREFIX}conditionsState`,
   get: ({ get }) => {
     const storage = get(storageState);
@@ -34,8 +35,8 @@ export const conditionsLengthState = selector<number>({
 });
 
 const conditionPropertyState = selectorFamily<
-  Plugin.Condition[keyof Plugin.Condition],
-  keyof Plugin.Condition
+  PluginCondition[keyof PluginCondition],
+  keyof PluginCondition
 >({
   key: `${PREFIX}conditionPropertyState`,
   get:
@@ -53,11 +54,11 @@ const conditionPropertyState = selectorFamily<
         getUpdatedStorage(current, {
           conditionIndex,
           key,
-          value: newValue as Plugin.Condition[keyof Plugin.Condition],
+          value: newValue as PluginCondition[keyof PluginCondition],
         })
       );
     },
 });
 
-export const getConditionPropertyState = <T extends keyof Plugin.Condition>(property: T) =>
-  conditionPropertyState(property) as unknown as RecoilState<Plugin.Condition[T]>;
+export const getConditionPropertyState = <T extends keyof PluginCondition>(property: T) =>
+  conditionPropertyState(property) as unknown as RecoilState<PluginCondition[T]>;
