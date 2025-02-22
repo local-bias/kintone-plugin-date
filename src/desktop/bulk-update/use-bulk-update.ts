@@ -1,3 +1,7 @@
+import { GUEST_SPACE_ID } from '@/lib/global';
+import { t } from '@/lib/i18n';
+import { loadingOverlay } from '@/lib/loading';
+import { PluginCondition } from '@/schema/plugin-config';
 import {
   getAllRecords,
   getAppId,
@@ -5,14 +9,11 @@ import {
   updateAllRecords,
   UpdateAllRecordsParams,
 } from '@konomi-app/kintone-utilities';
-import { getAdjustedDate, validateRecord } from '../common-actions';
 import { DateTime } from 'luxon';
-import { GUEST_SPACE_ID } from '@/lib/global';
-import { loadingOverlay } from '@/lib/loading';
 import Swal from 'sweetalert2';
-import { t } from '@/lib/i18n';
+import { getAdjustedDate, validateRecord } from '../common-actions';
 
-export const useBulkUpdate = (params: { condition: Plugin.Condition }) => {
+export const useBulkUpdate = (params: { condition: PluginCondition }) => {
   const { condition } = params;
 
   return async () => {
