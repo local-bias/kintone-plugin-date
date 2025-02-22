@@ -1,10 +1,11 @@
 import { t } from '@/lib/i18n';
+import { PluginCondition } from '@/schema/plugin-config';
 import { getFieldValueAsString, kintoneAPI } from '@konomi-app/kintone-utilities';
 import { DateTime } from 'luxon';
 
 export const validateRecord = (params: {
   record: kintoneAPI.RecordData;
-  condition: Plugin.Condition;
+  condition: PluginCondition;
 }): { valid: true } | { valid: false; errorMessage: string } => {
   const { record, condition } = params;
 
@@ -42,7 +43,7 @@ export const validateRecord = (params: {
 export const getAdjustedDate = (params: {
   basisDate: DateTime;
   record: kintoneAPI.RecordData;
-  condition: Plugin.Condition;
+  condition: PluginCondition;
 }): DateTime => {
   const { basisDate, record, condition } = params;
   let adjusted = basisDate;
