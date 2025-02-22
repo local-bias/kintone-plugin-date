@@ -1,3 +1,4 @@
+import { PluginCondition } from '@/schema/plugin-config';
 import { Button } from '@mui/material';
 import React, { Suspense, type FC } from 'react';
 import { RecoilRoot, useRecoilValue } from 'recoil';
@@ -5,7 +6,7 @@ import { appFieldPropertiesState } from './state';
 import { useBulkUpdate } from './use-bulk-update';
 
 type Props = {
-  condition: Plugin.Condition;
+  condition: PluginCondition;
 };
 
 const Label: FC<{ fieldCode: string }> = ({ fieldCode }) => {
