@@ -1,3 +1,15 @@
+import { basisFieldsState } from '@/config/states/kintone';
+import { getConditionPropertyState } from '@/config/states/plugin';
+import {
+  ADJUSTMENT_BASIS_TYPES,
+  ADJUSTMENT_TARGETS,
+  ADJUSTMENT_TYPES,
+  getNewCondition,
+} from '@/lib/plugin';
+import { Ajustment } from '@/schema/plugin-config';
+import { RecoilFieldSelect, useRecoilRow } from '@konomi-app/kintone-utilities-react';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Accordion,
   AccordionDetails,
@@ -11,17 +23,6 @@ import {
 } from '@mui/material';
 import React, { FC, memo, Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { RecoilFieldSelect, useRecoilRow } from '@konomi-app/kintone-utilities-react';
-import { getConditionPropertyState } from '@/config/states/plugin';
-import {
-  ADJUSTMENT_BASIS_TYPES,
-  ADJUSTMENT_TARGETS,
-  ADJUSTMENT_TYPES,
-  getNewCondition,
-} from '@/lib/plugin';
-import { basisFieldsState } from '@/config/states/kintone';
 
 const state = getConditionPropertyState('adjustments');
 
@@ -33,13 +34,13 @@ const Component: FC = () => {
 
   const adjustments = useRecoilValue(getConditionPropertyState('adjustments'));
 
-  const onTypeChange = (i: number, type: Plugin.Adjustment['type']) => {
+  const onTypeChange = (i: number, type: Ajustment['type']) => {
     changeRow(i, { ...adjustments[i], type });
   };
-  const onTargetChange = (i: number, code: Plugin.Adjustment['target']) => {
+  const onTargetChange = (i: number, code: Ajustment['target']) => {
     changeRow(i, { ...adjustments[i], target: code });
   };
-  const onBasisTypeChange = (i: number, basisType: Plugin.Adjustment['basisType']) => {
+  const onBasisTypeChange = (i: number, basisType: Ajustment['basisType']) => {
     changeRow(i, { ...adjustments[i], basisType });
   };
 
@@ -61,7 +62,7 @@ const Component: FC = () => {
                   value={value.type}
                   select
                   sx={{ width: 200 }}
-                  onChange={(e) => onTypeChange(i, e.target.value as Plugin.Adjustment['type'])}
+                  onChange={(e) => onTypeChange(i, e.target.value as Ajustment['type'])}
                 >
                   {ADJUSTMENT_TYPES.map(({ label, value }) => (
                     <MenuItem key={value} value={value}>
@@ -74,7 +75,7 @@ const Component: FC = () => {
                   value={value.target}
                   select
                   sx={{ width: 200 }}
-                  onChange={(e) => onTargetChange(i, e.target.value as Plugin.Adjustment['target'])}
+                  onChange={(e) => onTargetChange(i, e.target.value as Ajustment['target'])}
                 >
                   {ADJUSTMENT_TARGETS.map(({ label, value }) => (
                     <MenuItem key={value} value={value}>
@@ -90,9 +91,7 @@ const Component: FC = () => {
                     value={value.basisType}
                     select
                     sx={{ width: 200 }}
-                    onChange={(e) =>
-                      onBasisTypeChange(i, e.target.value as Plugin.Adjustment['basisType'])
-                    }
+                    onChange={(e) => onBasisTypeChange(i, e.target.value as Ajustment['basisType'])}
                   >
                     {ADJUSTMENT_BASIS_TYPES.map(({ label, value }) => (
                       <MenuItem key={value} value={value}>
@@ -142,7 +141,7 @@ const Component: FC = () => {
   );
 };
 
-const AdjustmentSummary: FC<{ adjustment: Plugin.Adjustment }> = ({ adjustment }) => {
+const AdjustmentSummary: FC<{ adjustment: Ajustment }> = ({ adjustment }) => {
   const { target, basisType, basisFieldCode, staticValue, type } = adjustment;
   const targetLabel =
     ADJUSTMENT_TARGETS.find((target) => target.value === adjustment.target)?.label ?? '';
