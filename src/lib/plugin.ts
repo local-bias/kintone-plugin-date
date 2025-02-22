@@ -1,14 +1,15 @@
+import { Ajustment, AnyPluginConfig, PluginCondition, PluginConfig } from '@/schema/plugin-config';
 import { restoreStorage } from '@konomi-app/kintone-utilities';
 import { produce } from 'immer';
-import { PLUGIN_ID } from './global';
 import { DateTimeUnit } from 'luxon';
+import { PLUGIN_ID } from './global';
 
 export const BASIS_TYPES = [
   { label: '入力時の日付', value: 'currentDate' },
   { label: 'フィールドの値', value: 'field' },
 ] as const satisfies {
   label: string;
-  value: Plugin.Condition['basisType'];
+  value: PluginCondition['basisType'];
 }[];
 
 export const ADJUSTMENT_TARGETS = [
@@ -18,7 +19,7 @@ export const ADJUSTMENT_TARGETS = [
   { label: '時', value: 'hour' },
   { label: '分', value: 'minute' },
   { label: '秒', value: 'second' },
-] as const satisfies { label: string; value: Plugin.Adjustment['target'] }[] satisfies {
+] as const satisfies { label: string; value: Ajustment['target'] }[] satisfies {
   label: string;
   value: DateTimeUnit;
 }[];
@@ -28,14 +29,14 @@ export const ADJUSTMENT_TYPES = [
   { label: '減算', value: 'subtract' },
   { label: '最初の値', value: 'start' },
   { label: '最後の値', value: 'end' },
-] as const satisfies { label: string; value: Plugin.Adjustment['type'] }[];
+] as const satisfies { label: string; value: Ajustment['type'] }[];
 
 export const ADJUSTMENT_BASIS_TYPES = [
   { label: '固定値', value: 'static' },
   { label: 'フィールドの値', value: 'field' },
-] as const satisfies { label: string; value: Plugin.Adjustment['basisType'] }[];
+] as const satisfies { label: string; value: Ajustment['basisType'] }[];
 
-export const getNewCondition = (): Plugin.Condition => ({
+export const getNewCondition = (): PluginCondition => ({
   targetFieldCode: '',
   isTargetFieldDisabled: false,
   basisType: 'currentDate',
@@ -62,7 +63,7 @@ export const getNewCondition = (): Plugin.Condition => ({
 /**
  * プラグインの設定情報のひな形を返却します
  */
-export const createConfig = (): Plugin.Config => ({
+export const createConfig = (): PluginConfig => ({
   version: 2,
   conditions: [getNewCondition()],
 });
@@ -74,7 +75,7 @@ export const createConfig = (): Plugin.Config => ({
  * @param anyConfig 保存されている設定情報
  * @returns 新しいバージョンの設定情報
  */
-export const migrateConfig = (anyConfig: Plugin.AnyConfig): Plugin.Config => {
+export const migrateConfig = (anyConfig: AnyPluginConfig): PluginConfig => {
   const { version } = anyConfig;
   switch (version) {
     case undefined:
@@ -106,17 +107,17 @@ export const migrateConfig = (anyConfig: Plugin.AnyConfig): Plugin.Config => {
 /**
  * プラグインの設定情報を復元します
  */
-export const restorePluginConfig = (): Plugin.Config => {
-  const config = restoreStorage<Plugin.AnyConfig>(PLUGIN_ID) ?? createConfig();
+export const restorePluginConfig = (): PluginConfig => {
+  const config = restoreStorage<AnyPluginConfig>(PLUGIN_ID) ?? createConfig();
   return migrateConfig(config);
 };
 
-export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
-  storage: Plugin.Config,
+export const getUpdatedStorage = <T extends keyof PluginCondition>(
+  storage: PluginConfig,
   props: {
     conditionIndex: number;
     key: T;
-    value: Plugin.Condition[T];
+    value: PluginCondition[T];
   }
 ) => {
   const { conditionIndex, key, value } = props;
@@ -125,14 +126,14 @@ export const getUpdatedStorage = <T extends keyof Plugin.Condition>(
   });
 };
 
-export const getConditionField = <T extends keyof Plugin.Condition>(
-  storage: Plugin.Config,
+export const getConditionField = <T extends keyof PluginCondition>(
+  storage: PluginConfig,
   props: {
     conditionIndex: number;
     key: T;
-    defaultValue: NonNullable<Plugin.Condition[T]>;
+    defaultValue: NonNullable<PluginCondition[T]>;
   }
-): NonNullable<Plugin.Condition[T]> => {
+): NonNullable<PluginCondition[T]> => {
   const { conditionIndex, key, defaultValue } = props;
   if (!storage.conditions[conditionIndex]) {
     return defaultValue;
